@@ -18,9 +18,10 @@
   "license": "",
   "devDependencies": {
     "@types/node": "^22.9.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
+    "tsc": "^2.0.4",
     "vitest": "^3.2.4"
   }
 }
