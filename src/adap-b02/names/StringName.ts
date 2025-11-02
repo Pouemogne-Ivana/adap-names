@@ -14,7 +14,7 @@ export class StringName implements Name {
     }
 
     public asString(delimiter: string = this.delimiter): string {
-        if (delimiter===this.delimiter) {
+        if (delimiter=== this.delimiter) {
             return this.name;
         }
         return this.name.split(this.delimiter).join(delimiter);
