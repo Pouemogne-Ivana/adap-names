@@ -9,63 +9,113 @@ export class StringName extends AbstractName {
 
     constructor(source: string, delimiter?: string) {
         super();
-        throw new Error("needs implementation or deletion");
+        this.name = source;
     }
 
     public clone(): Name {
-        throw new Error("needs implementation or deletion");
+        return new StringName(this.name, this.delimiter);
     }
 
     public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
+        return super.asString(delimiter);
     }
 
     public asDataString(): string {
-        throw new Error("needs implementation or deletion");
+        return super.asDataString();
     }
 
     public isEqual(other: Name): boolean {
-        throw new Error("needs implementation or deletion");
+        return super.isEqual(other);
     }
 
     public getHashCode(): number {
-        throw new Error("needs implementation or deletion");
+        return super.getHashCode();
     }
 
     public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
+        return this.noComponents===0;
     }
 
     public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
+        return this.delimiter;
     }
 
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.noComponents;
     }
-
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        if (i<0 || i >= this.noComponents) throw new RangeError();
+        let echap = false;
+        let index= 0;
+        let curComp ="";
+        for (const char of this.name) {
+            if (echap) {
+                curComp += char;
+                echap =false;
+            }else if (char=== this.delimiter) {
+                if (index===i) return curComp;
+                index++;
+                curComp = "";
+            } else if (char === ESCAPE_CHARACTER) {
+                echap = true;}
+            else {
+                curComp +=char;
+            }
+        }
+        return curComp;
+    }
+    private reconstruieren(komponenten: string[]): void {
+        if (komponenten.length===0) {
+            this.noComponents = 0;
+            this.name = "";
+            return;
+        }
+        this.name=komponenten.map(c =>
+            c.replace(
+                new RegExp(`[${ESCAPE_CHARACTER}${this.delimiter}]`,"g"),
+                char => ESCAPE_CHARACTER + char)).join(this.delimiter);
+        this.noComponents= komponenten.length;
     }
 
     public setComponent(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+        const komponenten= []; //leer für alle Namen Komponenten
+        for (let j =0; j< this.noComponents; j++) {
+            komponenten.push(j===i? c : this.getComponent(j));
+        }
+        this.reconstruieren(komponenten);
     }
 
     public insert(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+        const komponenten = [];
+        for (let j = 0; j < this.noComponents; j++) {
+            if (j === i) komponenten.push(c);
+            komponenten.push(this.getComponent(j));}
+        if (i ===this.noComponents) komponenten.push(c);
+        this.reconstruieren(komponenten);
     }
 
     public append(c: string) {
-        throw new Error("needs implementation or deletion");
+        const komponenten = [];
+        for (let k = 0; k <this.noComponents; k++) {
+            komponenten.push(this.getComponent(k));}
+        komponenten.push(c);
+        this.reconstruieren(komponenten);
     }
 
     public remove(i: number) {
-        throw new Error("needs implementation or deletion");
+        const komponenten = [];
+        for (let l = 0; l < this.noComponents; l++) {
+            if (l!== i) komponenten.push(this.getComponent(l));}
+        this.reconstruieren(komponenten);
     }
 
     public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
-    }
-
+        const komponenten = [];
+        for (let i = 0; i < other.getNoComponents(); i++) {
+            komponenten.push(other.getComponent(i));}
+        for (let i = 0; i <this.noComponents; i++) {
+            komponenten.push(this.getComponent(i));
+        }
+        this.reconstruieren(komponenten);
+    } 
 }
