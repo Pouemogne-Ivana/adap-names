@@ -7,36 +7,8 @@ export class StringArrayName extends AbstractName {
     protected components: string[] = [];
 
     constructor(source: string[], delimiter?: string) {
-        super();
+        super(delimiter);
         this.components=[...source];
-    }
-
-    public clone(): Name {
-        return new StringArrayName([...this.components], this.delimiter);
-    }
-
-    public asString(delimiter: string = this.delimiter): string {
-        return super.asString(delimiter);
-    }
-
-    public asDataString(): string {
-        return super.asDataString();
-    }
-
-    public isEqual(other: Name): boolean {
-        return super.isEqual(other);
-    }
-
-    public getHashCode(): number {
-        return super.getHashCode();
-    }
-
-    public isEmpty(): boolean {
-        return this.components.length===0;
-    }
-
-    public getDelimiterCharacter(): string {
-        return this.delimiter;
     }
 
     public getNoComponents(): number {
@@ -61,9 +33,5 @@ export class StringArrayName extends AbstractName {
 
     public remove(i: number) {
         this.components.splice(i,1);
-    }
-
-    public concat(other: Name): void {
-        for(let i=0; i<other.getNoComponents();i++){this.components.push(other.getComponent(i));}
     }
 }

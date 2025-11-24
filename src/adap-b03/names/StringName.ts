@@ -8,46 +8,41 @@ export class StringName extends AbstractName {
     protected noComponents: number = 0;
 
     constructor(source: string, delimiter?: string) {
-        super();
+        super(delimiter);
         this.name = source;
+        this.noComponents = this.computeNoComponents();
+    }
+    private computeNoComponents(): number {
+        let echap = false;
+        let count = 1;
+        if (!this.name.length) return 0;
+
+        for (const char of this.name) {
+            if (echap) {
+                echap = false;
+                continue;
+            }
+            if (char===ESCAPE_CHARACTER) {
+                echap = true;
+                continue;
+            }
+            if (char===this.delimiter) count++;
+        }
+        return count;
     }
 
     public clone(): Name {
         return new StringName(this.name, this.delimiter);
     }
 
-    public asString(delimiter: string = this.delimiter): string {
-        return super.asString(delimiter);
-    }
-
-    public asDataString(): string {
-        return super.asDataString();
-    }
-
-    public isEqual(other: Name): boolean {
-        return super.isEqual(other);
-    }
-
-    public getHashCode(): number {
-        return super.getHashCode();
-    }
-
-    public isEmpty(): boolean {
-        return this.noComponents===0;
-    }
-
-    public getDelimiterCharacter(): string {
-        return this.delimiter;
-    }
-
     public getNoComponents(): number {
         return this.noComponents;
     }
     public getComponent(i: number): string {
-        if (i<0 || i >= this.noComponents) throw new RangeError();
-        let echap = false;
-        let index= 0;
+        if (i<0||i>= this.noComponents) throw new RangeError();
         let curComp ="";
+        let index= 0;
+        let echap = false; 
         for (const char of this.name) {
             if (echap) {
                 curComp += char;
@@ -73,49 +68,47 @@ export class StringName extends AbstractName {
         this.name=komponenten.map(c =>
             c.replace(
                 new RegExp(`[${ESCAPE_CHARACTER}${this.delimiter}]`,"g"),
-                char => ESCAPE_CHARACTER + char)).join(this.delimiter);
+                char => ESCAPE_CHARACTER +char)).join(this.delimiter);
         this.noComponents= komponenten.length;
     }
 
     public setComponent(i: number, c: string) {
-        const komponenten= []; //leer für alle Namen Komponenten
-        for (let j =0; j< this.noComponents; j++) {
-            komponenten.push(j===i? c : this.getComponent(j));
-        }
+        const komponenten= this.toArray(); 
+        komponenten[i]=c;
         this.reconstruieren(komponenten);
     }
 
     public insert(i: number, c: string) {
-        const komponenten = [];
-        for (let j = 0; j < this.noComponents; j++) {
-            if (j === i) komponenten.push(c);
-            komponenten.push(this.getComponent(j));}
-        if (i ===this.noComponents) komponenten.push(c);
+        const komponenten = this.toArray();
+        komponenten.splice(i,0,c);
         this.reconstruieren(komponenten);
     }
 
     public append(c: string) {
-        const komponenten = [];
-        for (let k = 0; k <this.noComponents; k++) {
-            komponenten.push(this.getComponent(k));}
+        const komponenten = this.toArray();
         komponenten.push(c);
         this.reconstruieren(komponenten);
     }
 
     public remove(i: number) {
-        const komponenten = [];
-        for (let l = 0; l < this.noComponents; l++) {
-            if (l!== i) komponenten.push(this.getComponent(l));}
+        const komponenten = this.toArray();
+        komponenten.splice(i,1);
         this.reconstruieren(komponenten);
     }
 
     public concat(other: Name): void {
-        const komponenten = [];
+        const komponenten = this.toArray();
         for (let i = 0; i < other.getNoComponents(); i++) {
             komponenten.push(other.getComponent(i));}
-        for (let i = 0; i <this.noComponents; i++) {
-            komponenten.push(this.getComponent(i));
-        }
         this.reconstruieren(komponenten);
     } 
+    private toArray(): string[] {
+    const array = [];
+    for (let i = 0; i< this.noComponents; i++) {
+        array.push(this.getComponent(i));
+    }
+    return array;
+}   
+ 
+
 }
