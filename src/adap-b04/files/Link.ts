@@ -1,6 +1,7 @@
 import { Node } from "./Node";
 import { Directory } from "./Directory";
-
+function precond (condition: boolean, message: string="precondition failed"):void{
+    if(!condition) throw new Error(message);}
 export class Link extends Node {
 
     protected targetNode: Node | null = null;
@@ -9,6 +10,7 @@ export class Link extends Node {
         super(bn, pn);
 
         if (tn != undefined) {
+            precond(tn !== null, "Target node cannot be null");
             this.targetNode = tn;
         }
     }
@@ -18,6 +20,7 @@ export class Link extends Node {
     }
 
     public setTargetNode(target: Node): void {
+        precond(target !== null && target !== undefined, "precondition failed");
         this.targetNode = target;
     }
 
@@ -28,10 +31,14 @@ export class Link extends Node {
 
     public rename(bn: string): void {
         const target = this.ensureTargetNode(this.targetNode);
+        precond(bn !== null && bn !== undefined, "precondition failed");
+        precond(bn.trim().length > 0, "precondition failed");
+
         target.rename(bn);
     }
 
     protected ensureTargetNode(target: Node | null): Node {
+        precond(this.targetNode !== null, "Target node is not set");
         const result: Node = this.targetNode as Node;
         return result;
     }

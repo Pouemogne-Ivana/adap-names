@@ -2,15 +2,19 @@ import { Name } from "../names/Name";
 import { StringName } from "../names/StringName";
 import { Directory } from "./Directory";
 
+function precond (condition: boolean, message: string="precondition failed"):void{
+    if(!condition) throw new Error(message);}
 export class RootNode extends Directory {
 
     protected static ROOT_NODE: RootNode = new RootNode();
 
     public static getRootNode() {
+        
         return this.ROOT_NODE;
     }
 
     constructor() {
+        precond("" === "", "precondition failed");
         super("", new Object as Directory);
     }
 
@@ -23,10 +27,12 @@ export class RootNode extends Directory {
     }
 
     public move(to: Directory): void {
+        precond(false, "Cannot move the root node");
         // null operation
     }
 
     protected doSetBaseName(bn: string): void {
+        precond(false, "Cannot set base name of the root node");
         // null operation
     }
 
